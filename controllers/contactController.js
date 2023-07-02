@@ -3,6 +3,7 @@
 //@access public
 const createContact = async (req, res) => {
   try {
+    console.log("body: ", req.body);
     res.json({ massgae: "create contact" });
   } catch (error) {
     res.status(500).send(error.message);
