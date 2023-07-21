@@ -1,10 +1,22 @@
+const Contacts = require("../models/contacts.model");
+
 //@desc Create New contact
 //@route POST /api/contacts
 //@access public
 const createContact = async (req, res) => {
   try {
-    console.log("body: ", req.body);
-    res.json({ massgae: "create contact" });
+    const { name, email, phone } = req.body;
+    if (!name || !email || !phone) {
+      return res.status(400).send({ massgae: "All field are mendatory " });
+    }
+    const newContact = new Contacts({
+      name,
+      email,
+      phone,
+    });
+    await newContact.save();
+    console.log(newContact);
+    res.status(201).json(newContact);
   } catch (error) {
     res.status(500).send(error.message);
   }
