@@ -25,9 +25,11 @@ const createContact = async (req, res) => {
 //@desc Get all contacts
 //@route GET /api/contacts
 //@access public
+
 const getAllContacts = async (req, res) => {
   try {
-    res.status(200).json({ massgae: "get all the contacts " });
+    const contacts = await Contacts.find();
+    res.status(200).json(contacts);
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -38,7 +40,11 @@ const getAllContacts = async (req, res) => {
 //@access public
 const getContact = async (req, res) => {
   try {
-    res.status(200).json({ massgae: `get contact for ${req.params.id}` });
+    const contact = await Contacts.findById(req.params.id);
+    if (!contact) {
+      return res.status(404).json({ massgae: "Contact not found" });
+    }
+    res.status(200).json(contact);
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -49,7 +55,19 @@ const getContact = async (req, res) => {
 //@access public
 const updateContact = async (req, res) => {
   try {
-    res.status(200).json({ massgae: `update contact for ${req.params.id}` });
+    const contact = await Contacts.findById(req.params.id);
+    if (!contact) {
+      return res.status(404).json({ massgae: "Contact not found" });
+    }
+    const updateContact = await Contacts.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json(updateContact);
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -60,6 +78,11 @@ const updateContact = async (req, res) => {
 //@access public
 const deleteContact = async (req, res) => {
   try {
+    const contact = await Contacts.findById(req.params.id);
+    if (!contact) {
+      return res.status(404).json({ massgae: "Contact not found" });
+    }
+    await Contacts.findByIdAndRemove(req.params.id);
     res.status(200).json({ massgae: `delete contact for ${req.params.id}` });
   } catch (error) {
     res.status(500).send(error.message);
