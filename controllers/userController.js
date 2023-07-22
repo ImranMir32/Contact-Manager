@@ -1,5 +1,6 @@
 const Users = require("../models/users.model");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 //@desc Register a user
 //@route POST /api/user/register
@@ -43,9 +44,48 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    res.status(201).send({ message: "login" });
-  } catch (error) {
-    res.status(500).send(error.message);
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).send({ massgae: "All field are mendatory " });
+    }
+
+    const user = await Users.findOne({ email });
+    if (user) {
+      const isValidPassword = await bcrypt.compare(password, user.password);
+
+      if (isValidPassword) {
+        // generate token
+        const token = jwt.sign(
+          {
+            name: user.username,
+            userId: user._id,
+          },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: process.env.expiresTime,
+          }
+        );
+
+        res.status(200).json({
+          access_token: token,
+          user: user,
+          message: "Login successful!",
+        });
+      } else {
+        res.status(401).json({
+          error: "Authetication failed!",
+        });
+      }
+    } else {
+      res.status(401).json({
+        error: "Authetication failed!",
+      });
+    }
+  } catch {
+    res.status(401).json({
+      error: "Authetication failed!",
+    });
   }
 };
 
