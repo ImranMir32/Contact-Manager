@@ -58,8 +58,10 @@ const loginUser = async (req, res) => {
         // generate token
         const token = jwt.sign(
           {
-            name: user.username,
-            userId: user._id,
+            user: {
+              name: user.username,
+              userId: user._id,
+            },
           },
           process.env.JWT_SECRET,
           {
@@ -94,7 +96,8 @@ const loginUser = async (req, res) => {
 //@access private
 const currentUser = async (req, res) => {
   try {
-    res.status(201).send({ message: "current" });
+    console.log(req.user);
+    res.json(req.user);
   } catch (error) {
     res.status(500).send(error.message);
   }
