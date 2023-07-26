@@ -6,32 +6,34 @@ const jwt = require("jsonwebtoken");
 //@route POST /api/user/register
 //@access public
 const registerUser = async (req, res) => {
+  console.log("here->", req.body);
   try {
-    const { username, email, password } = req.body;
+    const { name, email, phone, password } = req.body;
 
-    if (!username || !email || !password) {
-      return res.status(400).send({ massgae: "All field are mendatory " });
+    if (!name || !email || !phone || !password) {
+      return res.status(400).json("All field are mendatory !");
     }
     const userAvailable = await Users.findOne({ email });
     if (userAvailable) {
-      return res.status(400).send({ massgae: "User already registered! " });
+      return res.status(400).json("Mail is already used !");
     }
 
     //Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log("Hashed Password: ", hashedPassword);
     const newUser = new Users({
-      username,
+      name,
       email,
+      phone,
       password: hashedPassword,
     });
     await newUser.save();
 
     console.log(`User created ${newUser}`);
     if (newUser) {
-      return res.status(201).json({ _id: newUser.id, email: newUser.email });
+      return res.status(201).json("Account has been created");
     } else {
-      return res.status(400).res.json("User data is not valid");
+      return res.status(400).json("User data is not valid !");
     }
   } catch (error) {
     res.status(500).send(error.message);
@@ -58,7 +60,7 @@ const loginUser = async (req, res) => {
         // generate token
         const token = jwt.sign(
           {
-            name: user.username,
+            name: user.name,
             userId: user._id,
           },
           process.env.JWT_SECRET,
