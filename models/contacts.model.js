@@ -19,6 +19,10 @@ const contactsSchema = mongoose.Schema(
       type: String,
       required: [true, "Please add the contact phone number"],
     },
+    category: {
+      type: String,
+      required: [true, "Please add category"],
+    },
   },
   {
     timestamps: true,

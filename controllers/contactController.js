@@ -5,8 +5,8 @@ const Contacts = require("../models/contacts.model");
 //@access private
 const createContact = async (req, res) => {
   try {
-    const { name, email, phone } = req.body;
-    if (!name || !email || !phone) {
+    const { name, email, phone, category } = req.body;
+    if (!name || !email || !phone || !category) {
       return res.status(400).send({ massgae: "All field are mendatory " });
     }
     const newContact = new Contacts({
@@ -14,6 +14,7 @@ const createContact = async (req, res) => {
       name,
       email,
       phone,
+      category,
     });
     await newContact.save();
     console.log(newContact);
@@ -31,6 +32,7 @@ const getAllContacts = async (req, res) => {
   try {
     console.log(req.user.userId);
     const contacts = await Contacts.find({ user_id: req.user.userId });
+    console.log(contacts);
     res.status(200).json(contacts);
   } catch (error) {
     res.status(500).send(error.message);
