@@ -45,18 +45,20 @@ const registerUser = async (req, res) => {
 //@access public
 
 const loginUser = async (req, res) => {
+  // console.log("req", req.body);
   try {
     const { email, password } = req.body;
-
     if (!email || !password) {
       return res.status(400).send({ massgae: "All field are mendatory " });
     }
 
     const user = await Users.findOne({ email });
+    // console.log(user);
     if (user) {
       const isValidPassword = await bcrypt.compare(password, user.password);
 
       if (isValidPassword) {
+        // console.log("yyyyy");
         // generate token
         const token = jwt.sign(
           {
@@ -65,9 +67,10 @@ const loginUser = async (req, res) => {
           },
           process.env.JWT_SECRET,
           {
-            expiresIn: process.env.expiresTime,
+            expiresIn: "1h",
           }
         );
+        // console.log(token);
 
         res.status(200).json({
           access_token: token,
@@ -103,8 +106,38 @@ const currentUser = async (req, res) => {
   }
 };
 
+//@desc Update User
+//@route PUT /api/user/:id
+//@access private
+const updateUser = async (req, res) => {
+  // console.log("-->", req.body);
+  // console.log("-->", req.params);
+  try {
+    const user = await Users.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json("User not found");
+    }
+    // console.log("user", user._id);
+    // console.log(req.user);
+    if (user._id.toString() !== req.user.userId) {
+      return res
+        .status(403)
+        .json("User don't have permission to update other user contacts");
+    }
+
+    const updatedUser = await Users.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   currentUser,
+  updateUser,
 };
