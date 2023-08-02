@@ -93,12 +93,6 @@ const deleteContact = async (req, res) => {
     if (!contact) {
       return res.status(404).json({ massgae: "Contact not found" });
     }
-    if (contact.user_id.toString() !== req.user.id) {
-      return res
-        .status(403)
-        .json("User don't have permission to update other user contacts");
-    }
-    // await Contact.deleteOne({ _id: req.params.id });
     await Contacts.findByIdAndRemove(req.params.id);
     res.status(200).json({ massgae: `delete contact for ${req.params.id}` });
   } catch (error) {
