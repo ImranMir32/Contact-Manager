@@ -114,22 +114,21 @@ const updateUser = async (req, res) => {
   // console.log("-->", req.params);
   try {
     const user = await Users.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json("User not found");
+    if (user) {
+      const isValidPassword = await bcrypt.compare(
+        req.body.password,
+        user.password
+      );
+      if (isValidPassword) {
+        user.name = req.body.name;
+        user.email = req.body.email;
+        user.phone = req.body.phone;
+        await user.save();
+        res.status(200).json(user);
+      } else {
+        res.status(401).json("Authetication failed!");
+      }
     }
-    // console.log("user", user._id);
-    // console.log(req.user);
-    if (user._id.toString() !== req.user.userId) {
-      return res
-        .status(403)
-        .json("User don't have permission to update other user contacts");
-    }
-
-    const updatedUser = await Users.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-
-    res.status(200).json(updatedUser);
   } catch (error) {
     res.status(500).send(error.message);
   }
