@@ -61,15 +61,8 @@ const updateContact = async (req, res) => {
   try {
     const contact = await Contacts.findById(req.params.id);
     if (!contact) {
-      return res.status(404).json({ massgae: "Contact not found" });
+      return res.status(404).json("Contact not found!");
     }
-
-    if (contact.user_id.toString() !== req.user.id) {
-      return res
-        .status(403)
-        .json("User don't have permission to update other user contacts");
-    }
-
     const updateContact = await Contacts.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -78,7 +71,7 @@ const updateContact = async (req, res) => {
       }
     );
 
-    res.status(200).json(updateContact);
+    res.status(200).json("Contact Updated!");
   } catch (error) {
     res.status(500).send(error.message);
   }
