@@ -17,7 +17,6 @@ const createContact = async (req, res) => {
       category,
     });
     await newContact.save();
-    console.log(newContact);
     res.status(201).json(newContact);
   } catch (error) {
     res.status(500).send(error.message);
@@ -30,9 +29,7 @@ const createContact = async (req, res) => {
 
 const getAllContacts = async (req, res) => {
   try {
-    console.log(req.user.userId);
     const contacts = await Contacts.find({ user_id: req.user.userId });
-    console.log(contacts);
     res.status(200).json(contacts);
   } catch (error) {
     res.status(500).send(error.message);

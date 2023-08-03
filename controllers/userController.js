@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 //@route POST /api/user/register
 //@access public
 const registerUser = async (req, res) => {
-  console.log("here->", req.body);
   try {
     const { name, email, phone, password } = req.body;
 
@@ -20,7 +19,6 @@ const registerUser = async (req, res) => {
 
     //Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("Hashed Password: ", hashedPassword);
     const newUser = new Users({
       name,
       email,
@@ -29,7 +27,6 @@ const registerUser = async (req, res) => {
     });
     await newUser.save();
 
-    console.log(`User created ${newUser}`);
     if (newUser) {
       return res.status(201).json("Account has been created");
     } else {
@@ -45,7 +42,6 @@ const registerUser = async (req, res) => {
 //@access public
 
 const loginUser = async (req, res) => {
-  // console.log("req", req.body);
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -53,13 +49,10 @@ const loginUser = async (req, res) => {
     }
 
     const user = await Users.findOne({ email });
-    // console.log(user);
     if (user) {
       const isValidPassword = await bcrypt.compare(password, user.password);
 
       if (isValidPassword) {
-        // console.log("yyyyy");
-        // generate token
         const token = jwt.sign(
           {
             name: user.name,
@@ -70,8 +63,6 @@ const loginUser = async (req, res) => {
             expiresIn: "1h",
           }
         );
-        // console.log(token);
-
         res.status(200).json({
           access_token: token,
           user: user,
@@ -99,7 +90,6 @@ const loginUser = async (req, res) => {
 //@access private
 const currentUser = async (req, res) => {
   try {
-    console.log(req.user);
     res.json(req.user);
   } catch (error) {
     res.status(500).send(error.message);
@@ -110,8 +100,6 @@ const currentUser = async (req, res) => {
 //@route PUT /api/user/:id
 //@access private
 const updateUser = async (req, res) => {
-  // console.log("-->", req.body);
-  // console.log("-->", req.params);
   try {
     const user = await Users.findById(req.params.id);
     if (user) {

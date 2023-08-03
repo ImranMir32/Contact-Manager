@@ -6,8 +6,6 @@ const fs = require("fs");
 //@access private
 const imgUpload = async (req, res) => {
   try {
-    console.log("I;m there-->");
-    console.log(req.body);
     const saveImage = imageModel({
       user_id: req.body.user_id,
       img: {
@@ -23,7 +21,6 @@ const imgUpload = async (req, res) => {
       .catch((err) => {
         console.log(err, "error has occur");
       });
-    console.log("image is saved");
     res.send("image is saved");
   } catch (error) {
     console.log("error");
@@ -36,9 +33,7 @@ const imgUpload = async (req, res) => {
 //@access private
 const getImg = async (req, res) => {
   try {
-    console.log(req.params.id);
     const data = await imageModel.findOne({ user_id: req.params.id });
-    // console.log("data ->", data.img.data);
     res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -64,8 +59,6 @@ const updateImg = async (req, res) => {
     };
 
     const updatedImage = await existingImage.save();
-    console.log("Image is updated");
-    console.log(updatedImage);
     res.send(updatedImage);
   } catch (error) {
     console.log(error);

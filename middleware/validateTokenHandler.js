@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 
 const validateToken = (req, res, next) => {
-  console.log(req.headers);
   const { authorization } = req.headers;
   try {
     const token = authorization.split(" ")[1];
@@ -9,7 +8,7 @@ const validateToken = (req, res, next) => {
     if (!decoded) {
       return res.status(401).json("User is not authorized");
     }
-    console.log(decoded);
+
     req.user = decoded;
     next();
   } catch (err) {
